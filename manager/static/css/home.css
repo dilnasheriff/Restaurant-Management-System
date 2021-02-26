@@ -1,0 +1,26 @@
+
+body{
+
+      background: url(../images/food1.jpg) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+    
+}
+
+.center h1{
+   color: rosybrown;
+   font-size: 50px;
+   font-weight: bold;
+   width:900px;
+   text-align: center;
+}
+.center h2{
+   color: rosybrown;
+   font-size: 30px;
+   font-weight: bold;
+   width:885px;
+   margin-top: 10px;
+   text-align: center;
+}

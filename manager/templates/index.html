@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+
+</head>
+
+<body class="index">
+    <div class="wrapper">
+        <nav class="navbar">
+            <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}">
+            <ul>
+                <li><a class="active" href="/">Home</a></li>
+                <li><a href="food">Food Items</a></li>
+                <li><a href="chef">Chef</a></li>
+                <li><a href="cashier">Cashier</a></li>
+                <li><a href="waiter">Waiter</a></li>
+            </ul>
+        </nav>
+        <div class="center">
+            <h1>Welcome To Resto</h1>
+            <h2>Its good mood food!</h2>
+        </div>
+
+    </div>
+</body>
+
+</html>

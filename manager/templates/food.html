@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Food Item</title>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css')}}">
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css')}}">
+    <link href='https://fonts.googleapis.com/css?family=Allura' rel='stylesheet'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        function closeAll() {
+            $(".add").toggle(false);
+            $(".update").toggle(false);
+            $(".find").toggle(false);
+            $(".remove").toggle(false);
+            $(".image").toggle(false);
+         }
+        $(document).ready(function() {
+            $(".abc").click(function() {
+                closeAll();
+                $(".add").toggle();
+            });
+        });
+        $(document).ready(function() {
+            $(".pqr").click(function() {
+                closeAll();
+                $(".update").toggle();
+            });
+        });
+        $(document).ready(function() {
+            $(".xyz").click(function() {
+                closeAll();
+                $(".find").toggle();
+            });
+        });
+        $(document).ready(function() {
+            $(".ijk").click(function() {
+                closeAll();
+                $(".remove").toggle();
+            });
+        });
+        $(document).ready(function() {
+            $(".lmn").click(function() {
+                closeAll();
+                $(".image").toggle();
+            });
+        });
+        function update_food(){
+           var selectBox = document.getElementById("update_id");
+           var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+           var form_data = new FormData();
+          form_data.append('id', selectedValue);
+
+           $.ajax({
+                 type: "POST",
+                 url: '/find_food',
+                 data: form_data,
+                 processData : false,
+                 contentType: false,
+                 success: function(data)
+                 {
+                     document.getElementById("name").value = data.food_info[0];
+                     document.getElementById("price").value = data.food_info[1];
+                     document.getElementById("category").value = data.food_info[2];
+                 }
+          });
+       }
+    </script>
+    <style>
+        .add,
+        .find,
+        .update,
+        .remove {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+        <div class="wrapper">
+         <nav class="navbar">
+            <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}">
+            <ul>
+               <li><a href="/">Home</a></li>
+               <li><a class="active" href="food">Food Items</a></li>
+               <li><a href="chef">Chef</a></li>
+               <li><a href="cashier">Cashier</a></li>
+               <li><a href="waiter">Waiter</a></li>
+            </ul>
+         </nav>
+      </div>
+    <p>RESTO FOOD ITEMS</p>
+    <table>
+        <tr>
+            <td valign="top">
+                <button class="abc">ADD RECORD</button><br><br>
+                <button class="pqr">UPDATE RECORD</button><br><br>
+                <button class="xyz">FIND RECORD</button><br><br>
+                <button class="ijk">REMOVE RECORD</button><br><br>
+                <button class="lmn">MANAGE IMAGES</button><br><br>
+            </td>
+            <td valign="top">
+        <div class="add">
+        <form action="/add_food" id="add_food" method="POST">
+            <table class="frame">
+                <tr>
+                    <td>
+                        <label for="name">Food Name:</label>
+                    </td>
+                    <td>
+                        <input type="text" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="price">Price:</label>
+                    </td>
+                    <td>
+                        <input type="number"name="price">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="category">Category:</label>
+                    </td>
+                    <td>
+                        <select name="category">
+                            <option value="Continental"> Continental </option>
+                            <option value="South Indian"> South Indian </option>
+                            <option value="North Indian"> North Indian </option>
+                            <option value="Dessert"> Dessert </option>
+                         </select>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" ><i class="fa fa-plus"> ADD</i></button>
+        </form>
+    </div>
+    <div class="update">
+        <form action="/update_food" id="update_food" method="POST">
+            <table class="frame">
+                <tr>
+                    <td>
+                        <label for="option">Select:</label>
+                    </td>
+                    <td>
+                       <select id="update_id" name="id" onchange="update_food()">
+                            <option disabled selected value> -- select an option -- </option>
+                            {%for food in item_list%}
+                             <option value={{food[0]}}>{{food[0]}}-{{food[1]}}</option>
+                            {%endfor%}
+                         </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="name">Food Name:</label>
+                    </td>
+                    <td>
+                        <input type="text" id="name" name="name">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                         <label for="price">Price:</label>
+                    </td>
+                    <td>
+                        <input type="number" id="price" name="price">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="category">Category:</label>
+                    </td>
+                    <td>
+                        <select id="category" name="category">
+                            <option value="Continental"> Continental </option>
+                            <option value="South Indian"> South Indian </option>
+                            <option value="North Indian"> North Indian </option>
+                            <option value="Dessert"> Dessert </option>
+                         </select>
+                    </td>
+                </tr>
+            </table>
+            <button type="submit" ><i class="fa fa-pencil"> UPDATE</i></button>
+        </form>
+    </div>
+    <div class="find">
+        <form id="find_food" action="/find_food" method="POST">
+            <label for="name">Type id:</label><br>
+            <input type="number" placeholder="Search.." name="id">
+            <button type="submit" ><i class="fa fa-search"> FIND</i></button>
+        </form>
+    </div>
+     <div class="remove">
+        <form action="/remove_food" id="remove_food" method="POST">
+            <label for="option">Select:</label>
+            <br>
+            <select name="id">
+                <option disabled selected value> -- select an option -- </option>
+                {%for food in item_list%}
+                 <option value={{food[0]}}>{{food[0]}}-{{food[1]}}</option>
+                {%endfor%}
+             </select>
+            <br>
+            <button type="submit"><i class="fa fa-trash"></i> DELETE</button></button>
+        </form>
+    </div>
+    <div class="image">
+        <form action = "/image_upload" method = "post" enctype="multipart/form-data">
+            <select name="id">
+                <option disabled selected value> -- select an option -- </option>
+                {%for food in item_list%}
+                 <option value={{food[0]}}>{{food[0]}}-{{food[1]}}</option>
+                {%endfor%}
+             </select>
+            <input type="file" name="file" /><br><br>
+            <input type = "submit" value="Upload">
+        </form>
+    </div>
+            </td>
+        </tr>
+    </table>
+
+</body>
+<script>
+    $("#add_food, #update_food, #remove_food").submit(function(e) {
+          e.preventDefault(); // avoid to execute the actual submit of the form.
+          var form = $(this);
+          var url = form.attr('action');
+          $.ajax({
+                 type: "POST",
+                 url: url,
+                 data: form.serialize(), // serializes the form's elements.
+                 success: function(data)
+                 {
+                     alert(data); // show response from the php script.
+                 }
+          });
+       });
+       $("#find_food").submit(function(e) {
+          e.preventDefault(); // avoid to execute the actual submit of the form.
+          var form = $(this);
+          var url = form.attr('action');
+          $.ajax({
+                 type: "POST",
+                 url: url,
+                 data: form.serialize(), // serializes the form's elements.
+                 success: function(data)
+                 {
+                     alert(
+                        ' Name: '+data.food_info[0]+' \n Price: '+data.food_info[1]+' \n Category: '+data.food_info[2]);
+
+                 }
+          });
+       });
+</script>
+</html>

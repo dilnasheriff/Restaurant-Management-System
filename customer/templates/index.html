@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Custom Website</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href='https://fonts.googleapis.com/css?family=Rouge Script' rel='stylesheet'>
+
+</head>
+
+<body class="index">
+    <div class="wrapper">
+        <nav class="navbar">
+            <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}">
+        </nav>
+        <div class="center">
+            <h1 style="font-family: 'Rouge Script';font-size: 95px; margin-bottom: 0px">Welcome To Resto</h1>
+            <h2>It's time to have a g<i class="fa fa-smile-o" aria-hidden="true"></i><i class="fa fa-smile-o" aria-hidden="true"></i>d food!</h2><br>
+            <form action="/login" method="post">
+                <h3>Mobile No:
+                    &nbsp;
+                    <input class="transparent" name="mobile_no" type="text">
+                    <button type="submit" class="fabutton">
+                        <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                    </button>
+
+                </h3>
+            </form>
+        </div>
+    </div>
+</body>
+
+</html>

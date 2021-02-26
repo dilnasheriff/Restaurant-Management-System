@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+   <head>
+      <meta charset="UTF-8">
+      <title>Chef Website</title>
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/edit.css')}}">
+      <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css')}}">
+      <link href='https://fonts.googleapis.com/css?family=Allura' rel='stylesheet'>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script>
+         function closeAll() {
+            $(".add").toggle(false);
+            $(".update").toggle(false);
+            $(".find").toggle(false);
+            $(".remove").toggle(false);
+         }
+         $(document).ready(function(){
+             $(".abc").click(function(){
+                closeAll();
+                $(".add").toggle();
+             });
+         });
+         $(document).ready(function(){
+             $(".pqr").click(function(){
+                closeAll();
+                $(".update").toggle();
+             });
+         });
+         $(document).ready(function(){
+             $(".xyz").click(function(){
+                closeAll();
+                $(".find").toggle();
+             });
+         });
+         $(document).ready(function(){
+             $(".ijk").click(function(){
+                closeAll();
+                $(".remove").toggle();
+             });
+         });
+         function update_chef(){
+           var selectBox = document.getElementById("update_id");
+           var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+           var form_data = new FormData();
+          form_data.append('id', selectedValue);
+
+           $.ajax({
+                 type: "POST",
+                 url: '/find_chef',
+                 data: form_data,
+                 processData : false,
+                 contentType: false,
+                 success: function(data)
+                 {
+                     document.getElementById("name").value = data.chef_info[1];
+                     document.getElementById("sal").value = data.chef_info[3];
+                     document.getElementById("location").value = data.chef_info[5];
+                     document.getElementById("pincode").value = data.chef_info[4];
+                     var d= new Date(data.chef_info[2]);
+                     document.getElementById("doj").value = d.toISOString().split('T')[0];
+                     var idx;
+                     d = document.getElementById("food_items");
+                     d.querySelectorAll('[type="checkbox"]').forEach((each)=>each.checked=false);
+                     for(idx=0; idx < data.food_items.length; idx++){
+                        d.querySelectorAll('[value="'+data.food_items[idx][0]+'"]').forEach((each)=>each.checked=true);
+                     }
+                 }
+          });
+       }
+      </script>
+      <style>
+         .add,.find,.update,.remove{
+            display: none;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="wrapper">
+         <nav class="navbar">
+            <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}">
+            <ul>
+               <li><a href="/">Home</a></li>
+               <li><a href="food">Food Items</a></li>
+               <li><a class="active" href="chef">Chef</a></li>
+               <li><a href="cashier">Cashier</a></li>
+               <li><a href="waiter">Waiter</a></li>
+            </ul>
+         </nav>
+      </div>
+      <p>RESTO CHEF</p>
+      <table>
+         <tr>
+            <td valign="top">
+               <button class="abc">ADD RECORD</button><br><br>
+               <button class="pqr">UPDATE RECORD</button><br><br>
+               <button class="xyz">FIND RECORD</button><br><br>
+               <button class="ijk">REMOVE RECORD</button><br><br>
+            </td>
+            <td valign="top">
+               <div class="add">
+                  <form id="add_chef" action="/add_chef" method="POST">
+                     <table  class="frame">
+                        <tr>
+                           <td>
+                              <label for="name">First Name:</label>
+                           </td>
+                           <td>
+                              <input type="text" name="name">
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="pincode">Pincode:</label>
+                           </td>
+                           <td>
+                              <input type="number" name="pincode" >
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="location">Location:</label>
+                           </td>
+                           <td>
+                              <input type="text" name="location">
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="sal">Salary:</label>
+                           </td>
+                           <td>
+                              <input type="number" name="salary" >
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="food_id">Food item:</label>
+                           </td>
+                           <td>
+                              <fieldset>
+                                 {%for item in item_list%}
+                                    <input name="food_id" type="checkbox" value={{item[3]}}>{{item[0]}}</input><br>
+                                 {%endfor%}
+                              </fieldset>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="date_of_joining">Date Of Joining:</label>
+                           </td>
+                           <td>
+                              <input type="date" name="date_of_joining">
+                           </td>
+                        </tr>
+                     </table>
+                     <button type="submit" ><i class="fa fa-plus"> ADD</i></button>
+                  </form>
+               </div>
+
+               <div class="update">
+                  <form id="update_chef" action="/update_chef" method="POST">
+                     <table class="frame">
+                       <tr>
+                          <td>
+                             <label for="option">Select:</label>
+                          </td>
+                          <td>
+                             <select id="update_id" name="id" onchange="update_chef()">
+                                <option disabled selected value> -- select an option -- </option>
+                                {%for chef in chefs%}
+                                 <option value={{chef[0]}}>{{chef[0]}}-{{chef[1]}}</option>
+                                {%endfor%}
+                             </select>
+                          </td>
+                       </tr>
+                        <tr>
+                           <td>
+                              <label for="name">Name:</label>
+                           </td>
+                           <td>
+                              <input type="text" id="name" name="name">
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="pincode">Pincode:</label>
+                           </td>
+                           <td>
+                              <input type="number" id="pincode" name="pincode" >
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="location">Location:</label>
+                           </td>
+                           <td>
+                              <input type="text" id="location" name="location">
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="sal">Salary:</label>
+                           </td>
+                           <td>
+                              <input type="number" id="sal" name="salary" >
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="food_id">Food item:</label>
+                           </td>
+                           <td>
+                              <fieldset id="food_items">
+                                 {%for item in item_list%}
+                                    <input name="food_id" type="checkbox" value={{item[3]}}>{{item[0]}}</input><br>
+                                 {%endfor%}
+                              </fieldset>
+                           </td>
+                        </tr>
+                        <tr>
+                           <td>
+                              <label for="doj">Date Of Joining:</label>
+                           </td>
+                           <td>
+                               <input type="date" id="doj" name="doj" >
+                           </td>
+                        </tr>
+                     </table>
+                     <button type="submit" ><i class="fa fa-pencil"> UPDATE</i></button>
+                  </form>
+               </div>
+
+               <div class="find">
+                  <form id="find_chef" action="/find_chef" method="POST">
+                     <label for="name">Type id:</label><br>
+                     <input type="number" placeholder="Search.." name="id">
+                     <button type="submit" ><i class="fa fa-search"> FIND</i></button>
+                  </form>
+               </div>
+
+               <div class="remove">
+                  <form action="/remove_chef" id="remove_chef" method="POST">
+                     <label for="option">Select:</label>
+                     <br>
+                     <select name="id">
+                        <option disabled selected value> -- select an option -- </option>
+                        {%for chef in chefs%}
+                           <option value={{chef[0]}}>{{chef[0]}}-{{chef[1]}}</option>
+                        {%endfor%}
+                     </select>
+                     <br>
+                     <button type="submit" ><i class="fa fa-trash"></i> DELETE</button></button>
+                  </form>
+               </div>
+            </td>
+         </tr>
+      </table>
+   </body>
+   <script>
+      $("#add_chef, #update_chef, #remove_chef").submit(function(e) {
+          e.preventDefault(); // avoid to execute the actual submit of the form.
+          var form = $(this);
+          var url = form.attr('action');
+          $.ajax({
+                 type: "POST",
+                 url: url,
+                 data: form.serialize(), // serializes the form's elements.
+                 success: function(data)
+                 {
+                     alert(data); // show response from the php script.
+                 }
+          });
+       });
+
+       $("#find_chef").submit(function(e) {
+          e.preventDefault(); // avoid to execute the actual submit of the form.
+          var form = $(this);
+          var url = form.attr('action');
+          $.ajax({
+                 type: "POST",
+                 url: url,
+                 data: form.serialize(), // serializes the form's elements.
+                 success: function(data)
+                 {
+                     alert(
+                        ' Name: '+data.chef_info[1]+' \n DOJ: '+data.chef_info[2]+' \n Salary: '+data.chef_info[3]+' \n Pincode: '+data.chef_info[4]+' \n Location: '+data.chef_info[5] );
+
+                 }
+          });
+       });
+
+   </script>
+</html>

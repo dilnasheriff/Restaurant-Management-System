@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+/* Set height of body and the document to 100% */
+body, html {
+  height: 100%;
+  margin: 0;
+  font-family: Arial;
+}
+
+/* Style tab links */
+.tablink {
+  background-color: #555;
+  color: white;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  font-size: 17px;
+  width: 20%;
+}
+
+.tablink:hover {
+  background-color: #777;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent1 {
+  color: white;
+  display: none;
+  padding: 100px 20px;
+  height: 100%;
+}
+.tab {
+  float: left;
+  border: 1px solid #ccc;
+  background: rgba(0, 0, 0, 0.5);
+  color:white;
+  width: 30%;
+  height: 500px;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  display: block;
+  background-color: inherit;
+  color: white;
+  padding: 8px 16px;
+  width: 100%;
+  border: none;
+  outline: none;
+  text-align: left;
+  cursor: pointer;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color:  #555;
+  color:black;
+}
+
+/* Create an active/current "tab button" class */
+.tab button.active {
+  background-color: #555;
+  color:black;
+
+}
+
+/* Style the tab content */
+.tabcontent {
+    float: left;
+    border: 1px solid #ccc;
+    width: 50%;
+    background-color: black;;
+    color: white;
+    height: 500px;
+    display: none;
+    margin-left: 40px;
+}
+
+/* Clear floats after the tab */
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.btn-group button {
+  background-color:black; /* Green background */
+  border: 1px solid white; /* Green border */
+  color: white; /* White text */
+  padding: 10px 24px; /* Some padding */
+  cursor: pointer; /* Pointer/hand icon */
+  width: 50%; /* Set a width if needed */
+  display: block; /* Make the buttons appear below each other */
+}
+
+.btn-group button:not(:last-child) {
+  border-bottom: none; /* Prevent double borders */
+}
+
+/* Add a background color on hover */
+.btn-group button:hover {
+  background-color:black;
+  color:black;
+}
+
+
+</style>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <div class="wrapper">
+    <nav class="navbar" style="height:130px;">
+        <img class="logo" src="{{ url_for('static', filename='images/logo.png') }}">
+    </nav>
+    <div class="center" style="top:10%">
+        <h1>Welcome {{name}}</h1>
+    </div>
+  </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+<script>
+    orders={};
+    function increment(food_id) {
+        if(food_id in orders) {
+            orders[food_id]+=1;
+        } else {
+            orders[food_id]=1;;
+        }
+        $("#qty"+food_id).html(parseInt($("#qty"+food_id).html(), 10)+1);
+    }
+    function decrement(food_id) {
+        if(food_id in orders) {
+            if (orders[food_id]==0)
+                return;
+            orders[food_id]-=1;
+        } else {
+            return;
+        }
+        $("#qty"+food_id).html(parseInt($("#qty"+food_id).html(), 10)-1);
+    }
+    var items={{items|safe}};
+    function displayCart() {
+        var content = `<tr>
+                <th style="padding-bottom: 20px;" align="left">Item</th>
+                <th style="padding-bottom: 20px;" align="right">Qty</th>
+                <th style="padding-bottom: 20px;" align="right">Total Rs.</th>
+            </tr>`;
+         var total = 0;
+        for(var i in orders) {
+            total+=items[i][1]*orders[i];
+            content += "<tr><td align=\"left\">"+items[i][0]+"</td><td align=\"right\">"+orders[i]+"</td><td align=\"right\">"+items[i][1]*orders[i]+".00</td></tr>";
+        }
+        content+="<tr><th></th><th style=\"padding-top: 20px;\" align=\"right\">Total</th><th style=\"padding-top: 20px;\" align=\"right\">"+total+".00</th></tr>"
+        $("#cartTable").html(content);
+        document.getElementById("items").value=JSON.stringify(orders);
+    }
+</script>
+<button class="tablink" onclick="openPage('continential', this, 'rosybrown')">CONTINENTIAL</button>
+<button class="tablink" onclick="openPage('southindian', this, 'rosybrown')" id="defaultOpen">SOUTH INDIAN</button>
+<button class="tablink" onclick="openPage('northindian', this, 'rosybrown')">NORTH INDIAN</button>
+<button class="tablink" onclick="openPage('desserts', this, 'rosybrown')">DESSERTS</button>
+<button class="tablink" onclick="openPage('cart', this, 'rosybrown')" style="width: 10%;">
+    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+</button>
+<button class="tablink" style="width: 10%;"  onclick="window.location='/logout';">
+    Logout
+</button>
+
+<div id="cart" class="tabcontent1">
+    <div align="center">
+        <h2 style="width:30%; background: rgba(0, 0, 0, 0.8);">Cart</h2>
+        <table id="cartTable" style="background: rgba(0, 0, 0, 0.8); width:30%">
+        </table>
+    </div>
+
+    <form method="post" action="/place_order">
+        <input id="items" hidden name="items">
+        <button style="
+            margin-left: 70%;
+            margin-top: 100px;
+            color:black;
+            background-color: rosybrown;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 17px;
+            width: 20%;
+        " type="submit">Proceed to place order</button>
+    </form>
+</div>
+
+<div id="continential" class="tabcontent1">
+  <div class="tab">
+    {%for food in continental%}
+        <button class="tablinks" onmouseover="openCity(event, 'citem{{food[0]}}')">{{food[1]}}</button>
+    {%endfor%}
+  </div>
+  {%for food in continental%}
+      <div id="citem{{food[0]}}" align="center" class="tabcontent">
+        <div style="height: 460px;
+                    overflow: hidden;
+                    background-image: url('food_images/{{food[0]}}.jpg');
+                    background-size: cover;
+                    background-position: 50% 50%;">
+        </div>
+        <table style="width:90%; margin:10px; table-layout:fixed;">
+          <tr>
+            <td><i class="fa fa-inr" aria-hidden="true"></i> {{food[2]}}</td>
+            <td style="text-align: end;">
+                <button type="submit" class="fabutton" onclick="decrement({{food[0]}})">
+                    <i class="fa fa-minus" aria-hidden="true"></i>&nbsp;
+                </button>
+                    <span id="qty{{food[0]}}" style="border-radius:50%">0</span>&nbsp;
+                <button type="submit" class="fabutton" onclick="increment({{food[0]}})">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+  {%endfor%}
+  <div class="clearfix"></div>
+
+</div>
+
+<div id="southindian" class="tabcontent1">
+  
+  <div class="tab">
+    {%for food in south_indian%}
+        <button class="tablinks" onmouseover="openCity(event, 'sitem{{food[0]}}')">{{food[1]}}</button>
+    {%endfor%}
+  </div>
+  {%for food in south_indian%}
+      <div id="sitem{{food[0]}}" align="center" class="tabcontent">
+        <div style="height: 460px;
+                    overflow: hidden;
+                    background-image: url('food_images/{{food[0]}}.jpg');
+                    background-size: cover;
+                    background-position: 50% 50%;">
+        </div>
+        <table style="width:90%; margin:10px; table-layout:fixed;">
+          <tr>
+            <td><i class="fa fa-inr" aria-hidden="true"></i> {{food[2]}}</td>
+            <td style="text-align: end;">
+                <button type="submit" class="fabutton" onclick="decrement({{food[0]}})">
+                    <i class="fa fa-minus" aria-hidden="true"></i>&nbsp;
+                </button>
+                    <span id="qty{{food[0]}}" style="border-radius:50%">0</span>&nbsp;
+                <button type="submit" class="fabutton" onclick="increment({{food[0]}})">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+  {%endfor%}
+  
+  <div class="clearfix"></div>
+  
+</div>
+
+<div id="northindian" class="tabcontent1">
+ 
+  
+  <div class="tab">
+    {%for food in north_indian%}
+        <button class="tablinks" onmouseover="openCity(event, 'nitem{{food[0]}}')">{{food[1]}}</button>
+    {%endfor%}
+  </div>
+  {%for food in north_indian%}
+      <div id="nitem{{food[0]}}" align="center" class="tabcontent">
+        <div style="height: 460px;
+                    overflow: hidden;
+                    background-image: url('food_images/{{food[0]}}.jpg');
+                    background-size: cover;
+                    background-position: 50% 50%;">
+        </div>
+      <table style="width:90%; margin:10px; table-layout:fixed;">
+          <tr>
+            <td><i class="fa fa-inr" aria-hidden="true"></i> {{food[2]}}</td>
+            <td style="text-align: end;">
+                <button type="submit" class="fabutton" onclick="decrement({{food[0]}})">
+                    <i class="fa fa-minus" aria-hidden="true"></i>&nbsp;
+                </button>
+                    <span id="qty{{food[0]}}" style="border-radius:50%">0</span>&nbsp;
+                <button type="submit" class="fabutton" onclick="increment({{food[0]}})">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+  {%endfor%}
+  <div class="clearfix"></div>
+
+</div>
+
+<div id="desserts" class="tabcontent1">
+  <div class="tab">
+    {%for food in dessert%}
+        <button class="tablinks" onmouseover="openCity(event, 'ditem{{food[0]}}')">{{food[1]}}</button>
+    {%endfor%}
+  </div>
+   {%for food in dessert%}
+      <div id="ditem{{food[0]}}" align="center" class="tabcontent">
+        <div style="height: 460px;
+                    overflow: hidden;
+                    background-image: url('food_images/{{food[0]}}.jpg');
+                    background-size: cover;
+                    background-position: 50% 50%;">
+        </div>
+      <table style="width:90%; margin:10px; table-layout:fixed;">
+          <tr>
+            <td><i class="fa fa-inr" aria-hidden="true"></i> {{food[2]}}</td>
+            <td style="text-align: end;">
+                <button type="submit" class="fabutton" onclick="decrement({{food[0]}})">
+                    <i class="fa fa-minus" aria-hidden="true"></i>&nbsp;
+                </button>
+                    <span id="qty{{food[0]}}" style="border-radius:50%">0</span>&nbsp;
+                <button type="submit" class="fabutton" onclick="increment({{food[0]}})">
+                    <i class="fa fa-plus" aria-hidden="true"></i>
+                </button>
+            </td>
+          </tr>
+        </table>
+      </div>
+  {%endfor%}
+  <div class="clearfix"></div>
+</div>
+<script>
+  function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
+  }
+  </script>
+
+<script>
+function openPage(pageName,elmnt,color) {
+  var i, tabcontent1, tablinks;
+  tabcontent1 = document.getElementsByClassName("tabcontent1");
+  for (i = 0; i < tabcontent1.length; i++) {
+    tabcontent1[i].style.display = "none";
+  }
+  tablinks = document.getElementsByClassName("tablink");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].style.backgroundColor = "";
+  }
+  document.getElementById(pageName).style.display = "block";
+  elmnt.style.backgroundColor = color;
+  if (pageName=="cart")
+    displayCart();
+}
+
+// Get the element with id="defaultOpen" and click on it
+document.getElementById("defaultOpen").click();
+
+
+</script>
+   
+</body>
+</html> 
